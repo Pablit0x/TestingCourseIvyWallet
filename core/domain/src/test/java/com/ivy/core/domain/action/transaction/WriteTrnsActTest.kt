@@ -57,53 +57,17 @@ class WriteTrnsActTest{
     @Test
     fun `Test creating new expense transaction`() = runBlocking {
         val transactionId = UUID.randomUUID()
-        val accountId = UUID.randomUUID()
 
-        val account = Account(
-            id = accountId,
-            name = "Testing Account",
-            currency = "PLN",
-            color = Color.RED,
-            icon = null,
-            excluded = false,
-            folderId = null,
-            orderNum = 1.0,
-            state = AccountState.Default,
-            sync = Sync(state = SyncState.Synced, LocalDateTime.now())
-        )
-
-        val tag = Tag(
-            UUID.randomUUID().toString(),
-            Color.RED,
-            "",
-            2.0,
-            TagState.Default,
-            Sync(SyncState.Synced, LocalDateTime.now())
-        )
-
-        val attachment = Attachment(
-            UUID.randomUUID().toString(),"","",AttachmentSource.Local, null, null, Sync(SyncState.Synced, LocalDateTime.now())
-        )
-
-        val metadata = TrnMetadata(null, null, null)
-
+        val account = account()
+        val tag = tag()
+        val attachment = attachment(transactionId.toString())
         val value = Value(50.0, "PLN")
 
-        val transaction = Transaction(
-            id = transactionId,
-            account = account,
-            type = TransactionType.Expense,
-            value = value,
-            category = null,
-            time = TrnTime.Actual(actual = LocalDateTime.now()),
-            title = null,
-            description = null,
-            state = TrnState.Default,
-            purpose = TrnPurpose.Fee,
+
+        val transaction = transaction(id = transactionId, account).copy(
             tags = listOf(tag),
             attachments = listOf(attachment),
-            metadata = metadata,
-            sync = Sync(SyncState.Synced, LocalDateTime.now())
+            value = value
         )
 
         writeTrnsAct(WriteTrnsAct.Input.CreateNew(transaction))
